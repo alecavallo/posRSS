@@ -1,0 +1,7 @@
+<?php
+$GLOBALS['mysqlServer'] = "127.0.0.1";
+$GLOBALS['mysqlUsr'] = "posteamos";
+$GLOBALS['$mysqlPwd'] = "Po2k11Arg!";
+$GLOBALS['$database'] = "posteamos";
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+?>
