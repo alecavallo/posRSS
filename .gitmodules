@@ -1,0 +1,3 @@
+[submodule "extensions/facebook"]
+	path = extensions/facebook
+	url = git://github.com/facebook/php-sdk.git
