@@ -71,7 +71,7 @@ for ($i=0; $i < ($categoriesCount*3); $i++) { //muestro 3 noticias de cada categ
 		writeCache($cacheFilename, $newsMix);
 		$sql = "update news set news.processed=2 where news.id = {$row['id']}";
 		$db->query($sql);
-		echo "Publicado[#{$ret_obj ['id']}]: {$row['title']} // [{$row['created']}]\n";
+		echo "[".date("c")."] Publicado[#{$ret_obj ['id']}]: {$row['title']} // [{$row['created']}]\n";
 		
 		sleep(60*105); //publicar 1 noticia cada 10 minutos;
 		
