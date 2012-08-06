@@ -223,7 +223,8 @@ while (($row = mysql_fetch_assoc($result)) == true) {
 					
 					
 					//trato de obtener una imágen desde la descripción de la noticia
-					$imgsDesc = getImgFromDesc($itm->getContent(true));
+					//$imgsDesc = getImgFromDesc($itm->getContent(true));
+					$imgsDesc = null; //desactivo la obtención de imágenes desde la noticia
 					if (!empty($imgsDesc)) {
 						foreach ($imgsDesc as $rowImg) {
 							$imgSize = getimagesize($rowImg);
