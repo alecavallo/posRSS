@@ -73,7 +73,7 @@ for ($i=0; $i < ($categoriesCount*3); $i++) { //muestro 3 noticias de cada categ
 		$db->query($sql);
 		echo "[".date("c")."] Publicado[#{$ret_obj ['id']}]: {$row['title']} // [{$row['created']}]\n";
 		
-		sleep(60*105); //publicar 1 noticia cada 10 minutos;
+		sleep(60*45); //publicar 1 noticia cada 10 minutos;
 		
 	
 	} catch ( FacebookApiException $e ) {
