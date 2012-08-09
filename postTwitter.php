@@ -90,7 +90,7 @@ for ($i=0; $i < ($categoriesCount*1); $i++) { //muestro 2 noticias de cada categ
 			continue;
 		}
 		$shortTitle = substr($row['title'], 0,strlen($row['title'])-$removeChars)."...";
-		$tweet = $row['twitter'].": ".$shortTitle." ".$link." //#ptms";
+		$tweet = $row['twitter'].": ".$shortTitle." ".$link." / #ptms";
 	}
 	
 	$connection = new tmhOAuth(array(
