@@ -83,14 +83,14 @@ for ($i=0; $i < ($categoriesCount*1); $i++) { //muestro 2 noticias de cada categ
 		$row['twitter'] = "@".$row['alias'];
 	}
              
-	$tweet = "#".str_ireplace(" & ", "", $row['name'])." ".$row['twitter'].": ".$row['title']." ".$link."";
-	if(strlen($tweet)>123){
-		$removeChars = strlen($tweet)-(123);
+	$tweet = $row['twitter'].": ".$row['title']." ".$link."";
+	if(strlen($tweet)>140){
+		$removeChars = strlen($tweet)-(140);
 		if(strlen($row['title'])-$removeChars <=0){
 			continue;
 		}
 		$shortTitle = substr($row['title'], 0,strlen($row['title'])-$removeChars)."...";
-		$tweet = "#".str_ireplace(" & ", "", $row['name'])." ".$row['twitter'].": ".$shortTitle." ".$link."";
+		$tweet = $row['twitter'].": ".$shortTitle." ".$link."";
 	}
 	
 	$connection = new tmhOAuth(array(
