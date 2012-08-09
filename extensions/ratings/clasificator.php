@@ -108,6 +108,8 @@ class Clasificator {
 				$rate = 29;
 			}
 			$rate=$news['NewsRating'];
+		}else{
+			$rate=$news['NewsRating'];
 		}
 		$rate = (int) (($rate+$pVisits+$pVotes+$pComments+$pChars-$pAging)< 100 ? ($rate+$pVisits+$pVotes+$pComments+$pChars-$pAging) : 100);
 		$rate = $rate <=0 ? 1 : $rate;
