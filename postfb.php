@@ -16,7 +16,7 @@ if (($newsMix = readCache($cacheFilename, '12 hours')) === false || true) {
 	
 	
 	//$sql = "select id, title, created, modified, user_id, link from news where (created >= DATE_SUB(now(), INTERVAL 12 HOUR) or created is null) order by rating DESC, rand() limit 48;";
-	$sql = "select news.id, news.title, news.created, news.modified, news.user_id, news.link, news.category_id, news.rating, categories.name from news inner join feeds on feeds.id=news.feed_id	inner join sources on sources.id=feeds.source_id inner join categories on categories.id=feeds.category_id where news.processed <> 2 and (news.created >= DATE_SUB(now(), INTERVAL 24 HOUR)) and news.category_id in (select id from categories) and news.rating > 10 and feeds.content_type <> 2 group by sources.id order by news.rating desc, news.created desc, rand()";
+	$sql = "select news.id, news.title, news.created, news.modified, news.user_id, news.link, news.category_id, news.rating, categories.name from news inner join feeds on feeds.id=news.feed_id	inner join sources on sources.id=feeds.source_id inner join categories on categories.id=feeds.category_id where news.processed <> 2 and (news.created >= DATE_SUB(now(), INTERVAL 12 HOUR)) and news.category_id in (select id from categories) and news.rating > 10 and feeds.content_type <> 2 group by sources.id order by news.rating desc, news.created desc, rand()";
 	$result = $db->query($sql);
 	$data = array();
 	while (($row = mysql_fetch_assoc($result)) == true) {
