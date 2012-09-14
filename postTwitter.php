@@ -2,6 +2,7 @@
 require_once 'extensions/tmhOAuth/tmhOAuth.php';
 require_once 'connector.php';
 require_once('configure.php');
+require_once('extras.php');
 global $cacheFilename;
 $cacheFilename = "TWdailyposts.tmp";
 
@@ -65,7 +66,9 @@ for ($i=0; $i < ($categoriesCount*1); $i++) { //muestro 2 noticias de cada categ
 	echo "Quedan por procesar: ".count($newsMix)." noticias\n";
 	echo "*********************************************\n\n";
 	$row = array_shift($newsMix);
-	$shortener = $bitLyUrl."v3/shorten?login=".$bitLyUsr."&apiKey=".$bitLyApiKey."&longUrl=".urlencode($row['link']);
+	$link = "/medios/".slug($row['source'])."/noticia/".$row['id']."-".slug($row['title']);
+	$link = "http://www.posteamos.com".$link.".html";
+	$shortener = $bitLyUrl."v3/shorten?login=".$bitLyUsr."&apiKey=".$bitLyApiKey."&longUrl=".urlencode($link);
 	$ch = curl_init(); 
 	curl_setopt($ch, CURLOPT_URL, $shortener); 
 	curl_setopt($ch, CURLOPT_HEADER, FALSE); 
