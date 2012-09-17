@@ -66,7 +66,7 @@ try {
 	$row = array_shift($newsMix);
 	$link = "/medios/".slug($row['sourcename'])."/noticia/".$row['id']."-".slug($row['title']);
 	$link = "http://www.posteamos.com".$link.".html";
-	$ret_obj = $facebook->api ( '/me/feed', 'POST', array ('link' => $row['link'], 'message' => $row['name'], 'access_token'=>$accessToken ) );
+	$ret_obj = $facebook->api ( '/me/feed', 'POST', array ('link' => $link, 'message' => $row['name'], 'access_token'=>$accessToken ) );
 	writeCache($cacheFilename, $newsMix);
 	$sql = "update news set news.processed=2 where news.id = {$row['id']}";
 	$db->query($sql);
