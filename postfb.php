@@ -13,7 +13,7 @@ try {
 } catch (Exception $e) {
 	die($e->getMessage());
 }
-if (($newsMix = readCache($cacheFilename, '12 hours')) === false || true) {
+if ((($newsMix = readCache($cacheFilename, '7 hours')) === false)||empty($newsMix)) {
 	
 	
 	//$sql = "select id, title, created, modified, user_id, link from news where (created >= DATE_SUB(now(), INTERVAL 12 HOUR) or created is null) order by rating DESC, rand() limit 48;";
@@ -28,7 +28,7 @@ if (($newsMix = readCache($cacheFilename, '12 hours')) === false || true) {
 	unset($sql);
 	//unset($db);
 	//var_dump($data);
-	$index = 10;
+	$index = 1;
 	$newsMix = array();
 	for ($i = 0; $i < $index; $i++) {
 		foreach ($data as $row) {
@@ -60,35 +60,27 @@ $facebook = new Facebook ( $config );
 				  
 $accessToken = "AAACnABbWnVkBADafGhkXse8YCZBOoZBBl3sdhXl0Y8zl7zGzEWKCimuUa6IbB8Clz0pTT0YPrfmErdT3Y0pZB468uHsUPs59DiZBuSvhOAZDZD";
 
-for ($i=0; $i < ($categoriesCount*3); $i++) { //muestro 3 noticias de cada categoría
-	if (count($newsMix)== 0) {
-		break;
-	}
-	echo "Quedan por procesar: ".count($newsMix)." noticias\n";
-	echo "*********************************************\n\n";
-	try {
-		$row = array_shift($newsMix);
-		$link = "/medios/".slug($row['sourcename'])."/noticia/".$row['id']."-".slug($row['title']);
-		$link = "http://www.posteamos.com".$link.".html";
-		$ret_obj = $facebook->api ( '/me/feed', 'POST', array ('link' => $row['link'], 'message' => $row['name'], 'access_token'=>$accessToken ) );
-		writeCache($cacheFilename, $newsMix);
-		$sql = "update news set news.processed=2 where news.id = {$row['id']}";
-		$db->query($sql);
-		echo "[".date("c")."] Publicado[#{$ret_obj ['id']}]: {$row['title']} // [{$row['created']}]\n";
-		
-		sleep(60*45); //publicar 1 noticia cada 10 minutos;
-		
+echo "Quedan por procesar: ".count($newsMix)." noticias\n";
+echo "*********************************************\n\n";
+try {
+	$row = array_shift($newsMix);
+	$link = "/medios/".slug($row['sourcename'])."/noticia/".$row['id']."-".slug($row['title']);
+	$link = "http://www.posteamos.com".$link.".html";
+	$ret_obj = $facebook->api ( '/me/feed', 'POST', array ('link' => $row['link'], 'message' => $row['name'], 'access_token'=>$accessToken ) );
+	writeCache($cacheFilename, $newsMix);
+	$sql = "update news set news.processed=2 where news.id = {$row['id']}";
+	$db->query($sql);
+	echo "[".date("c")."] Publicado[#{$ret_obj ['id']}]: {$row['title']} // [{$row['created']}]\n";
+} catch ( FacebookApiException $e ) {
+	// If the user is logged out, you can have a 
+	// user ID even though the access token is invalid.
+	// In this case, we'll get an exception, so we'll
+	// just ask the user to login again here.
 	
-	} catch ( FacebookApiException $e ) {
-		// If the user is logged out, you can have a 
-		// user ID even though the access token is invalid.
-		// In this case, we'll get an exception, so we'll
-		// just ask the user to login again here.
-		
-		echo "\n   * Error!: {$e->getType()} - {$e->getMessage()}\n\n";
-	}
-	echo "\n";
+	echo "\n   * Error!: {$e->getType()} - {$e->getMessage()}\n\n";
 }
+echo "\n";
+
 unset($db);
 //die('nada');
 
@@ -98,6 +90,10 @@ function writeCache($name, $data){
 		$name.= ".tmp";
 	}
 	$name = "tmp/".$name;
+	//si existe, elimino el archivo para que la fecha de creacion sea reciente
+	if (file_exists($name)) {
+		unlink($name);
+	}
 	$cache = fopen($name, 'w+');
 	if ($cache === false) {
 		throw new Exception("No se puede crear el archivo temporario", 0);
@@ -124,8 +120,14 @@ function readCache($name, $expires) {
 	}
 	
 	$fileCreation = filectime($name);
-	$expTimestamp = strtotime($expires, $fileCreation);
+	//$hdate = date("c",$fileCreation);
+	$expTimestamp = strtotime("+".$expires, $fileCreation);
+	//$hexpire = date("c",$expTimestamp);
+	//echo $hdate."  --  ".$hexpire;
 	if ($expTimestamp <= time()) {
+		if (file_exists($name)) {
+			unlink($name);
+		}
 		return false;
 	}
 	
