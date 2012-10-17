@@ -100,7 +100,7 @@ while (($row = mysql_fetch_assoc($result)) == true) {
 					$mediaType = explode("/", $enclosures[0]['type']);
 					if(strtolower($mediaType[0])=="image"){//si son imágenes, chequeo tamaño
 						$imgSize = getimagesize($enclosures[0]['link']);
-						if ($imgSize[0]>=(390*3/4) && $imgSize[1]>=(300*3/4)) {//si la imágen es mayor que los 3/4 de 390px*300px la dejo pasar 
+						if ($imgSize[0]>=(328*5/6) && $imgSize[1]>=(238*5/6)) {//si la imágen es mayor que los 5/6 de 390px*300px la dejo pasar 
 							$encUrl = $enclosures[0]['link'];
 							$encLength = $enclosures[0]['length'];
 							$encType = $enclosures[0]['type'];
