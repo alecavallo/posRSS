@@ -29,7 +29,14 @@ try {
 	die($e->getMessage());
 }
 //$db->query("SET autocommit=0"); //disable autocommit
-$sql = "select * from feeds where enabled in (1,2) and (content_type = 1 or content_type = 2) and (last_processing_date <= DATE_SUB(now(), INTERVAL 1 HOUR) or last_processing_date is null) order by rating asc, rand();";
+$sql = <<<QRY
+select users.id as user_id, feeds.* 
+from feeds 
+inner join sources on sources.id=feeds.source_id
+left join users on users.sources_id=sources.id
+where enabled in (1,2) and (content_type = 1 or content_type = 2) and (last_processing_date <= DATE_SUB(now(), INTERVAL 1 HOUR) or last_processing_date is null) order by feeds.rating asc, rand();
+QRY;
+
 $result = $db->query($sql);
 unset($sql);
 //unset($db);
@@ -156,11 +163,18 @@ while (($row = mysql_fetch_assoc($result)) == true) {
 				$encUrl = mysql_real_escape_string($encUrl);
 				//$link = mysql_real_escape_string($link);
 				$hasImage = mysql_real_escape_string($hasImage);
+				
+				if(empty($row['user_id'])){
+					$userId = 'null';
+				}else {
+					$userId=$row['user_id'];
+				}
 
+				
 				$newsSql="INSERT LOW_PRIORITY IGNORE INTO `news`
 				(`title`, `summary`, `body`, `rating`, `visits`, `votes`, `created`, `modified`, `user_id`, `city_id`, `state_id`,
 				`repeated_url`, `feed_id`, `related_news_id`, `media_type`, `media_url`, `link`, `hasImages`, `category_id`)
-				VALUES ( '{$title}', '{$summary}', '{$body}', 30, 0, 0, '{$created}', null, null, {$row['city_id']}, {$row['state_id']},
+				VALUES ( '{$title}', '{$summary}', '{$body}', 30, 0, 0, '{$created}', null, {$userId}, {$row['city_id']}, {$row['state_id']},
 				null, {$row['id']}, null, '{$encType}', '{$encUrl}', '{$link}', {$hasImage}, {$row['category_id']})
 				ON DUPLICATE KEY UPDATE title='{$title}', summary='{$summary}', body='{$body}';";
 
