@@ -65,6 +65,11 @@ class Clasificator {
 		$this->relatedWeight = mysql_fetch_assoc($aux);
 		$this->relatedWeight = $this->relatedWeight['value'];
 		
+		$sql="select value from parameters p where p.key like 'minRelevance'";
+		$aux = $this->db->query($sql);
+		$this->minRelevance = mysql_fetch_assoc($aux);
+		$this->minRelevance = $this->minRelevance['value'];
+		
 
 		unset($aux);
 	}
@@ -132,7 +137,7 @@ class Clasificator {
 	private function calculateRelated(){
 		$newsId = $this->news['NewsId'];
 		$datetime = date("Y-m-d H:i:s", strtotime("-2 day"));
-		$minRelevance=27;
+		$minRelevance=$this->minRelevance;
 		$fulltext = $this->news['NewsTitle']." ".$this->news['Summary']." ".$this->news['Body'];
 		$fulltext = mysql_escape_string($fulltext);
 		$sql = <<<QRY
