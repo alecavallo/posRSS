@@ -146,7 +146,7 @@ from news
 inner join feeds on feeds.id = news.feed_id
 inner join sources Source on Source.id = feeds.source_id
 where
-news.created >= '{$datetime}' and news.category_id={$this->news['CategoryId']} and match(news.title, news.summary) against("{$fulltext}") > {$minRelevance} and News.id <> {$newsId}
+news.created >= '{$datetime}' and news.category_id={$this->news['CategoryId']} and match(news.title, news.summary) against("{$fulltext}") > {$minRelevance} and news.id <> {$newsId}
 QRY;
 		$result = $this->db->query($sql);
 		$row = mysql_fetch_row($result);
