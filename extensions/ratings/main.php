@@ -10,11 +10,11 @@ if (!isset($db)) {
 		die($e->getMessage());
 	}
 }
-$sql="select c.name as Category, f.id as FeedId, n.id as NewsId, n.title as NewsTitle, n.summary as Summary, n.rating as NewsRating, n.visits as NewsVisits, n.votes as NewsVotes, n.created as NewsCreated, n.modified as NewsModified, n.related_news_id as NewsRelated, n.hasImages as NewsHasImage, n.processed as Processed
+$sql="select c.name as Category, c.id CategoryId, f.id as FeedId, n.id as NewsId, n.title as NewsTitle, n.summary as Summary, n.body as Body, n.rating as NewsRating, n.visits as NewsVisits, n.votes as NewsVotes, n.created as NewsCreated, n.modified as NewsModified, n.related_news_id as NewsRelated, n.hasImages as NewsHasImage, n.processed as Processed
 from categories c
 inner join feeds f on c.id=f.category_id
 inner join news n on n.feed_id=f.id
-where n.visits > 1 and (n.rating > 1 or
+where (n.rating > 1 or
 n.created >= DATE_SUB(CURDATE(), INTERVAL 3 DAY))
 order by n.rating asc;";
 $categories = $db->query($sql, true);

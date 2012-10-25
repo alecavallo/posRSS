@@ -59,6 +59,12 @@ class Clasificator {
 		$aux = $this->db->query($sql);
 		$this->period = mysql_fetch_assoc($aux);
 		$this->period = $this->period['value'];
+		
+		$sql="select value from parameters p where p.key like 'relatedWeight'";
+		$aux = $this->db->query($sql);
+		$this->relatedWeight = mysql_fetch_assoc($aux);
+		$this->relatedWeight = $this->relatedWeight['value'];
+		
 
 		unset($aux);
 	}
@@ -98,6 +104,7 @@ class Clasificator {
 		$pVotes = $this->calculateVotes();
 		$pComments = $this->calculateComments();
 		$pAging = $this->calculateAging();
+		$pRelated = $this->calculateRelated();
 		//$pChars = $this->calculateLength();
 		$pChars = 0;
 
@@ -111,7 +118,7 @@ class Clasificator {
 		}else{
 			$rate=$news['NewsRating'];
 		}
-		$rate = (int) (($rate+$pVisits+$pVotes+$pComments+$pChars-$pAging)< 100 ? ($rate+$pVisits+$pVotes+$pComments+$pChars-$pAging) : 100);
+		$rate = (int) (($rate+$pVisits+$pVotes+$pComments+$pChars+$pRelated-$pAging)< 100 ? ($rate+$pVisits+$pVotes+$pComments+$pChars+$pRelated-$pAging) : 100);
 		$rate = $rate <=0 ? 1 : $rate;
 		$sql = "update news set rating = {$rate} where id = {$this->news['NewsId']};";
 		$this->db->query($sql);
@@ -120,6 +127,30 @@ class Clasificator {
 
 	private function calculateVisits(){
 		return $this->visitsWeight*$this->news['NewsVisits'];
+	}
+	
+	private function calculateRelated(){
+		$newsId = $this->news['NewsId'];
+		$datetime = date("Y-m-d H:i:s", strtotime("-2 day"));
+		$minRelevance=27;
+		$fulltext = $this->news['NewsTitle']." ".$this->news['Summary']." ".$this->news['Body'];
+		$fulltext = mysql_escape_string($fulltext);
+		$sql = <<<QRY
+select count(*) as cant
+from news
+inner join feeds on feeds.id = news.feed_id
+inner join sources Source on Source.id = feeds.source_id
+where
+news.created >= '{$datetime}' and news.category_id={$this->news['CategoryId']} and match(news.title, news.summary) against("{$fulltext}") > {$minRelevance} and News.id <> {$newsId}
+QRY;
+		$result = $this->db->query($sql);
+		$row = mysql_fetch_row($result);
+		$related = $row[0];
+		$sql = "select count(*) from news where news.created >= '{$datetime}' and news.category_id={$this->news['CategoryId']}";
+		$result = $this->db->query($sql);
+		$row = mysql_fetch_row($result);
+		$totalNews = $row[0];
+		return $this->relatedWeight*($related*100/$totalNews);
 	}
 
 	private function calculateVotes(){
