@@ -237,8 +237,12 @@ while (($row = mysql_fetch_assoc($result)) == true) {
 					
 					
 					//trato de obtener una imágen desde la descripción de la noticia
-					//$imgsDesc = getImgFromDesc($itm->getContent(true));
-					$imgsDesc = null; //desactivo la obtención de imágenes desde la noticia
+					if ($hasImage==0) {
+						$imgsDesc = getImgFromDesc($itm->getContent(true));;
+					}else {
+						$imgsDesc = null;
+					}
+					
 					if (!empty($imgsDesc)) {
 						foreach ($imgsDesc as $rowImg) {
 							$imgSize = getimagesize($rowImg);
@@ -439,11 +443,16 @@ function getImgFromDesc($html){
 	$src=array();
 	foreach ($img as $node) {
 		if ($node->hasAttribute('src')) {
-			$src[] = $node->getAttribute("src");
+			$aux = $node->getAttribute("src");
+			$imgSize = getimagesize($aux);
+			if ($imgSize[0]<(390*3/4) || $imgSize[1]<(300*3/4)) {//si la imágen es menor que los 3/4 de 390px*300px la descarto
+				continue;	
+			}
+			$src[] = $aux;
 		}
 	}
-
-	return $src;
+	//retorno la primera imágen que tenga un tamaño adecuado
+	return $src[0];
 }
 
 class RSSreader {
